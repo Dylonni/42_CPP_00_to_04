@@ -11,39 +11,48 @@
 # **************************************************************************** #
 
 SRC_MAIN		= 	src/main.cpp \
-					src/contact.cpp \
-					src/phonebook.cpp \
-					src/utils.cpp
+				src/contact.cpp \
+				src/phonebook.cpp \
+				src/utils.cpp
 
 SRCS			= ${SRC_MAIN}
 
-OBJ				= $(SRCS:.cpp=.o)
+OBJ_DIR			= objs
+OBJS 			= $(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
-CXX				= c++
-RM				= rm -f
+CXX			= c++
+RM			= rm -f
 CXXFLAGS		= -Wall -Wextra -Werror -std=c++98
 
-NAME            = phonebook
+NAME			= phonebook
 
-all:			$(NAME)
+all: $(OBJ_DIR) $(OBJS) $(NAME)
 
-$(NAME):		$(OBJ)
-				@echo "\033[1;35m\n                              ⌛️Compiling files...\033[0m"
-				$(CXX) $(OBJ) $(CXXFLAGS) -o $(NAME)
-				@echo "\033[32;1m\n                     Project has compiled successfully! ✅ \033[0m"
-				@echo "\033[32;1m\n 💾 Executable './$(NAME)' has been created in: \n    └─ 📂 \033[4;36m ~ $(PWD)\033[0m"
+$(OBJ_DIR):
+	@mkdir -p $(OBJ_DIR)
+
+$(OBJ_DIR)/%.o: src/%.cpp | $(OBJ_DIR)
+	@mkdir -p $(@D)
+	@printf '\033[A\033[19C'"⌛ [\e[1;96mCompiling\033[0m]\033[35m $<\033[0m \n"
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(NAME): $(OBJS)
+	@$(CXX) $(OBJS) $(CXXFLAGS) -o $(NAME)
+	@printf '\033[A\033[20C'"\033[32;1m  ✅ Project has compiled successfully!          \033[0m"
+	@printf "\n\n    [🏳️ FLAGS: \033[0;35m$(CXXFLAGS)\033[0m]"
+	@echo "\033[32;1m\n 💾 Executable \e[7m./$(NAME)\e[27m has been created in: \n    └─ 📂 \033[4;36m ~ $(PWD)\033[0m"
 
 clean:
-	$(RM) $(OBJ)
+	$(RM) -r $(OBJ_DIR)
 
 fclean:
-	@echo "\033[1;33m\n                        [Cleaning directories with \033[0;36mfclean\033[1;33m]\n\033[0m"
+	@echo "\033[1;93m\n                        [Cleaning directories with \033[0;96mfclean\033[1;93m]\n\033[0m"
 	@make clean
 	$(RM) $(NAME)
 
-re:	
+re:
 	@make fclean
-	@echo "\033[1;33m\n                            [Calling \033[0;36mmake all\033[1;33m rule]\n\033[0m"
+	@echo "\033[1;93m\n                             [Calling \033[0;96mmake all\033[1;93m rule]\n\n\033[0m"
 	@make -s all
 
-.PHONY:	all clean fclean re
+.PHONY: all clean fclean re
