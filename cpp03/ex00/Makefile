@@ -15,7 +15,7 @@ SRC_MAIN		=	src/main.cpp \
 
 SRCS			= ${SRC_MAIN}
 
-OBJ_DIR			= objs
+OBJ_DIR			= .objs
 OBJS			= $(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
 CXX				= c++
